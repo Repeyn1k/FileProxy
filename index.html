@@ -1,214 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Drive Image Proxy</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .input-group {
-            margin: 20px 0;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        button {
-            background: #4285f4;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-        
-        button:hover {
-            background: #3367d6;
-        }
-        
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e8f0fe;
-            border-radius: 5px;
-            display: none;
-        }
-        
-        .result.active {
-            display: block;
-        }
-        
-        .generated-link {
-            word-break: break-all;
-            margin: 10px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 3px;
-        }
-        
-        .copy-btn {
-            background: #34a853;
-            margin-left: 10px;
-        }
-        
-        .copy-btn:hover {
-            background: #2d9249;
-        }
-        
-        .instructions {
-            margin-top: 30px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        
-        .instructions h3 {
-            margin-bottom: 10px;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-        }
-        
-        .instructions li {
-            margin: 10px 0;
-        }
-        
-        code {
-            background: #eee;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
 </head>
 <body>
     <div class="container">
-        <h1>🔗 Прокси для изображений Google Drive</h1>
-        
-        <div class="input-group">
-            <label for="driveUrl">Введите ссылку на изображение с Google Drive:</label>
-            <input type="text" id="driveUrl" placeholder="https://drive.google.com/file/d/.../view">
-        </div>
-        
-        <button onclick="generateProxyLink()">Создать прокси-ссылку</button>
-        
-        <div id="result" class="result">
-            <h3>Ваша прокси-ссылка:</h3>
-            <div id="generatedLink" class="generated-link"></div>
-            <button onclick="copyToClipboard()" class="copy-btn">📋 Копировать ссылку</button>
-            <p><small>Ссылка будет действительна, пока файл доступен на Google Drive</small></p>
-            <a id="previewLink" href="#" target="_blank">👁️ Предпросмотр изображения</a>
-        </div>
-        
-        <div class="instructions">
-            <h3>📖 Как использовать:</h3>
-            <ol>
-                <li>Скопируйте ссылку на изображение из Google Drive (должна быть в формате <code>https://drive.google.com/file/d/ФАЙЛ_ID/view</code>)</li>
-                <li>Вставьте ссылку в поле выше и нажмите "Создать прокси-ссылку"</li>
-                <li>Используйте сгенерированную ссылку для вставки изображений на сайты</li>
-                <li>Файл должен быть <strong>доступен по ссылке</strong> в настройках Google Drive</li>
-            </ol>
-            
-            <h3>🔗 Прямые ссылки для других форматов:</h3>
-            <ul>
-                <li>Google Drive File ID: <code id="fileId">-</code></li>
-                <li>Прямая ссылка на изображение: <code id="directLink">-</code></li>
-            </ul>
-        </div>
+        <header class="header">
+            <h1>🖼️ Прокси для изображений Google Drive</h1>
+            <p class="subtitle">Оберните ссылку Google Drive в прямую ссылку на изображение</p>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section">
+                <div class="input-group">
+                    <label for="driveUrl">
+                        <span class="label-text">Ссылка на изображение с Google Drive:</span>
+                        <span class="label-hint">Пример: https://drive.google.com/file/d/ABC123XYZ/view</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="driveUrl" 
+                            placeholder="Вставьте ссылку Google Drive сюда..."
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <button id="clearBtn" class="clear-btn" title="Очистить поле">
+                            ×
+                        </button>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="generateBtn" class="btn btn-primary">
+                        <span class="btn-icon">🔗</span>
+                        Создать прокси-ссылку
+                    </button>
+                    <button id="exampleBtn" class="btn btn-secondary">
+                        <span class="btn-icon">📋</span>
+                        Пример ссылки
+                    </button>
+                </div>
+            </section>
+
+            <section id="resultSection" class="result-section hidden">
+                <div class="result-card">
+                    <h3>✅ Ваша прокси-ссылка готова:</h3>
+                    
+                    <div class="result-content">
+                        <div class="link-display">
+                            <code id="generatedLink" class="generated-link"></code>
+                            <button id="copyBtn" class="btn btn-copy" title="Копировать в буфер обмена">
+                                📋
+                            </button>
+                        </div>
+                        
+                        <div class="link-actions">
+                            <a id="openLink" class="btn btn-action" target="_blank" rel="noopener">
+                                🔗 Открыть ссылку
+                            </a>
+                            <a id="downloadLink" class="btn btn-action" download>
+                                💾 Скачать изображение
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="usage-example">
+                        <h4>📝 Пример использования в HTML:</h4>
+                        <pre><code id="htmlExample">&lt;img src="ваша-ссылка" alt="Описание изображения"&gt;</code></pre>
+                        <button id="copyHtmlBtn" class="btn btn-secondary btn-sm">
+                            Копировать HTML
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="previewSection" class="preview-section hidden">
+                <h3>👁️ Предпросмотр изображения:</h3>
+                <div class="preview-container">
+                    <div id="imageContainer" class="image-container">
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                        <img id="previewImage" class="preview-image hidden" alt="Предпросмотр изображения">
+                        <div id="errorMessage" class="error-message hidden">
+                            ❌ Не удалось загрузить изображение
+                        </div>
+                    </div>
+                    
+                    <div class="image-info">
+                        <div class="info-item">
+                            <span class="info-label">Прямая ссылка:</span>
+                            <code id="directLink" class="info-value"></code>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">File ID:</span>
+                            <code id="fileId" class="info-value"></code>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Статус:</span>
+                            <span id="statusText" class="status status-loading">Проверка...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="instructions-section">
+                <h3>📖 Как это работает:</h3>
+                <div class="instructions-grid">
+                    <div class="instruction-card">
+                        <div class="instruction-icon">1️⃣</div>
+                        <h4>Получите ссылку</h4>
+                        <p>Загрузите изображение на Google Drive и откройте доступ "По ссылке"</p>
+                    </div>
+                    <div class="instruction-card">
+                        <div class="instruction-icon">2️⃣</div>
+                        <h4>Вставьте ссылку</h4>
+                        <p>Скопируйте ссылку из Google Drive и вставьте в поле выше</p>
+                    </div>
+                    <div class="instruction-card">
+                        <div class="instruction-icon">3️⃣</div>
+                        <h4>Используйте ссылку</h4>
+                        <p>Используйте сгенерированную ссылку для вставки изображения на сайты</p>
+                    </div>
+                </div>
+
+                <div class="notes">
+                    <h4>⚠️ Важные замечания:</h4>
+                    <ul>
+                        <li>Файл должен быть доступен <strong>"По ссылке"</strong> в настройках Google Drive</li>
+                        <li>Ссылка будет работать, пока файл не удален с Google Drive</li>
+                        <li>Изображения кэшируются браузером для быстрой загрузки</li>
+                        <li>Максимальный размер зависит от ограничений Google Drive</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>🛠️ Инструмент для обертывания ссылок Google Drive | Работает на GitHub Pages</p>
+            <p class="footer-links">
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> | 
+                <a href="https://developers.google.com/drive" target="_blank" rel="noopener">Google Drive API</a>
+            </p>
+        </footer>
     </div>
 
-    <script>
-        function extractFileId(url) {
-            // Извлекаем ID файла из различных форматов ссылок Google Drive
-            const patterns = [
-                /\/file\/d\/([^\/]+)/,
-                /id=([^&]+)/,
-                /([a-zA-Z0-9_-]{25,})/
-            ];
-            
-            for (const pattern of patterns) {
-                const match = url.match(pattern);
-                if (match) return match[1];
-            }
-            return null;
-        }
-        
-        function generateProxyLink() {
-            const driveUrl = document.getElementById('driveUrl').value.trim();
-            const fileId = extractFileId(driveUrl);
-            
-            if (!fileId) {
-                alert('Пожалуйста, введите корректную ссылку Google Drive');
-                return;
-            }
-            
-            // Получаем базовый URL текущей страницы
-            const baseUrl = window.location.origin;
-            
-            // Создаем прокси-ссылку
-            const proxyLink = `${baseUrl}/proxy.html?id=${fileId}`;
-            const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
-            
-            // Отображаем результат
-            document.getElementById('generatedLink').textContent = proxyLink;
-            document.getElementById('previewLink').href = proxyLink;
-            document.getElementById('fileId').textContent = fileId;
-            document.getElementById('directLink').textContent = directLink;
-            document.getElementById('result').classList.add('active');
-            
-            // Прокручиваем к результату
-            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function copyToClipboard() {
-            const link = document.getElementById('generatedLink').textContent;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Ссылка скопирована в буфер обмена!');
-            });
-        }
-        
-        // Автоматически фокусируем поле ввода
-        document.getElementById('driveUrl').focus();
-    </script>
+    <!-- Скрипты -->
+    <script src="js/utils.js"></script>
+    <script src="js/proxy.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

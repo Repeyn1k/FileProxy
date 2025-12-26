@@ -16,30 +16,30 @@ class DriveImageProxy {
     setupEventListeners() {
         // Кнопка генерации ссылки
         document.getElementById('generateBtn').addEventListener('click', () => this.generateLink());
-        
+
         // Кнопка очистки поля
         document.getElementById('clearBtn').addEventListener('click', () => {
             document.getElementById('driveUrl').value = '';
             document.getElementById('driveUrl').focus();
         });
-        
+
         // Кнопка примера
         document.getElementById('exampleBtn').addEventListener('click', () => {
-            document.getElementById('driveUrl').value = 
+            document.getElementById('driveUrl').value =
                 'https://drive.google.com/file/d/1c7GGrJgTjLkfV1vUq2gRyi1lL4H4t5X7/view';
             Utils.showNotification('Пример ссылки вставлен', 'info');
         });
-        
+
         // Кнопка копирования ссылки
         document.getElementById('copyBtn').addEventListener('click', () => this.copyProxyLink());
-        
+
         // Обработка Enter в поле ввода
         document.getElementById('driveUrl').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.generateLink();
             }
         });
-        
+
         // Обновление предпросмотра при изменении URL параметров
         window.addEventListener('popstate', () => this.checkUrlParams());
     }
@@ -48,9 +48,9 @@ class DriveImageProxy {
     checkUrlParams() {
         const params = Utils.getUrlParams();
         const fileId = params.id;
-        
+
         if (fileId) {
-            document.getElementById('driveUrl').value = 
+            document.getElementById('driveUrl').value =
                 `https://drive.google.com/file/d/${fileId}/view`;
             this.processFileId(fileId);
         }
@@ -59,7 +59,7 @@ class DriveImageProxy {
     // Генерация прокси-ссылки
     generateLink() {
         const driveUrl = document.getElementById('driveUrl').value.trim();
-        
+
         if (!driveUrl) {
             Utils.showNotification('Введите ссылку Google Drive', 'warning');
             document.getElementById('driveUrl').focus();
@@ -67,7 +67,7 @@ class DriveImageProxy {
         }
 
         const fileId = Utils.extractFileId(driveUrl);
-        
+
         if (!fileId) {
             Utils.showNotification('Неверный формат ссылки Google Drive', 'error');
             return;
@@ -80,21 +80,21 @@ class DriveImageProxy {
     // Обработка File ID
     async processFileId(fileId) {
         this.currentFileId = fileId;
-        
+
         // Генерация ссылок
         this.currentDirectUrl = Utils.generateDirectUrl(fileId);
         this.currentProxyUrl = Utils.generateProxyUrl(fileId);
         const downloadUrl = Utils.generateDownloadUrl(fileId);
-        
+
         // Обновление UI
         this.updateUI(fileId);
-        
+
         // Показ секций
         this.showSections();
-        
+
         // Проверка доступности изображения
         await this.checkAndLoadImage();
-        
+
         // Обновление ссылок для действий
         this.updateActionLinks(downloadUrl);
     }
@@ -111,10 +111,10 @@ class DriveImageProxy {
     showSections() {
         document.getElementById('resultSection').classList.remove('hidden');
         document.getElementById('previewSection').classList.remove('hidden');
-        
+
         // Плавная прокрутка к результатам
         setTimeout(() => {
-            document.getElementById('resultSection').scrollIntoView({ 
+            document.getElementById('resultSection').scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
@@ -127,18 +127,18 @@ class DriveImageProxy {
         const loadingElement = document.getElementById('loadingSpinner');
         const imageElement = document.getElementById('previewImage');
         const errorElement = document.getElementById('errorMessage');
-        
+
         // Сброс состояния
         imageElement.classList.add('hidden');
         errorElement.classList.add('hidden');
         loadingElement.classList.remove('hidden');
         statusElement.textContent = 'Проверка доступности...';
         statusElement.className = 'status status-loading';
-        
+
         try {
             // Проверка доступности
             const isAvailable = await Utils.checkImageAvailability(this.currentDirectUrl);
-            
+
             if (isAvailable) {
                 // Загрузка изображения
                 imageElement.src = this.currentDirectUrl;
@@ -148,11 +148,11 @@ class DriveImageProxy {
                     imageElement.classList.add('loaded');
                     statusElement.textContent = 'Изображение доступно ✓';
                     statusElement.className = 'status status-success';
-                    
+
                     // Попытка получить размер изображения
                     this.getImageInfo(imageElement);
                 };
-                
+
                 imageElement.onerror = () => {
                     this.showImageError();
                 };
@@ -188,7 +188,7 @@ class DriveImageProxy {
         // Ссылка для открытия
         const openLink = document.getElementById('openLink');
         openLink.href = this.currentProxyUrl;
-        
+
         // Ссылка для скачивания
         const downloadLink = document.getElementById('downloadLink');
         downloadLink.href = downloadUrl;
@@ -200,7 +200,7 @@ class DriveImageProxy {
         const success = await Utils.copyToClipboard(this.currentProxyUrl);
         if (success) {
             Utils.showNotification('Ссылка скопирована в буфер обмена!', 'success');
-            
+
             // Анимация кнопки
             const btn = document.getElementById('copyBtn');
             btn.textContent = '✅';
@@ -216,10 +216,10 @@ class DriveImageProxy {
     async copyHtmlCode() {
         const htmlCode = `<img src="${this.currentProxyUrl}" alt="Описание изображения">`;
         const success = await Utils.copyToClipboard(htmlCode);
-        
+
         if (success) {
             Utils.showNotification('HTML код скопирован!', 'success');
-            
+
             // Анимация кнопки
             const btn = document.getElementById('copyHtmlBtn');
             const originalText = btn.textContent;
@@ -229,6 +229,56 @@ class DriveImageProxy {
             }, 2000);
         } else {
             Utils.showNotification('Не удалось скопировать код', 'error');
+        }
+    }
+
+    // Проверка и загрузка изображения
+    async checkAndLoadImage() {
+        const statusElement = document.getElementById('statusText');
+        const loadingElement = document.getElementById('loadingSpinner');
+        const imageElement = document.getElementById('previewImage');
+        const errorElement = document.getElementById('errorMessage');
+
+        // Сброс состояния
+        imageElement.classList.add('hidden');
+        errorElement.classList.add('hidden');
+        loadingElement.classList.remove('hidden');
+        statusElement.textContent = 'Проверка доступности...';
+        statusElement.className = 'status status-loading';
+
+        // Используем альтернативный URL для предпросмотра
+        const previewUrl = `https://lh3.googleusercontent.com/d/${this.currentFileId}`;
+
+        try {
+            const isAvailable = await Utils.checkImageAvailability(previewUrl);
+
+            if (isAvailable) {
+                imageElement.src = previewUrl;
+                imageElement.crossOrigin = "anonymous";
+
+                imageElement.onload = () => {
+                    loadingElement.classList.add('hidden');
+                    imageElement.classList.remove('hidden');
+                    statusElement.textContent = 'Изображение доступно ✓';
+                    statusElement.className = 'status status-success';
+                };
+
+                imageElement.onerror = () => {
+                    // Пробуем прямой URL как fallback
+                    imageElement.src = this.currentDirectUrl;
+                    imageElement.onload = () => {
+                        loadingElement.classList.add('hidden');
+                        imageElement.classList.remove('hidden');
+                        statusElement.textContent = 'Изображение доступно ✓';
+                        statusElement.className = 'status status-success';
+                    };
+                    imageElement.onerror = () => this.showImageError();
+                };
+            } else {
+                this.showImageError();
+            }
+        } catch (error) {
+            this.showImageError();
         }
     }
 }

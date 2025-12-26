@@ -3,21 +3,21 @@ const Utils = {
     // Извлечение File ID из ссылки Google Drive
     extractFileId(url) {
         if (!url) return null;
-        
+
         const patterns = [
             /\/file\/d\/([a-zA-Z0-9_-]+)/,
             /id=([a-zA-Z0-9_-]+)/,
             /\/d\/([a-zA-Z0-9_-]+)\//,
             /([a-zA-Z0-9_-]{25,})/ // Общий паттерн для ID Google Drive
         ];
-        
+
         for (const pattern of patterns) {
             const match = url.match(pattern);
             if (match && match[1]) {
                 return match[1];
             }
         }
-        
+
         return null;
     },
 
@@ -34,9 +34,9 @@ const Utils = {
     // Генерация прокси-ссылки
     generateProxyUrl(fileId) {
         const currentUrl = window.location.origin + window.location.pathname;
-        return `${currentUrl}?id=${encodeURIComponent(fileId)}`;
+        const baseUrl = currentUrl.replace('index.html', '');
+        return `${baseUrl}viewer.html?id=${encodeURIComponent(fileId)}`;
     },
-
     // Генерация прямой ссылки Google Drive
     generateDirectUrl(fileId) {
         return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(fileId)}`;
@@ -62,7 +62,7 @@ const Utils = {
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
+
             try {
                 const successful = document.execCommand('copy');
                 document.body.removeChild(textArea);

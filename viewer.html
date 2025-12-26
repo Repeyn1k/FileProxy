@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр изображения</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+        }
+        .image-container {
+            max-width: 90vw;
+            max-height: 90vh;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .loading {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <div class="loading">Загрузка изображения...</div>
+        <img id="image" style="display: none;" alt="Изображение Google Drive">
+        <div id="error" class="error" style="display: none;">Ошибка загрузки изображения</div>
+    </div>
+
+    <script>
+ const params = new URLSearchParams(window.location.search);
+    const fileId = params.get('id');
+    
+    if (fileId) {
+        const imageUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
+        const img = document.getElementById('image');
+        const loading = document.querySelector('.loading');
+        const error = document.getElementById('error');
+        
+        img.onload = () => {
+            loading.style.display = 'none';
+            img.style.display = 'block';
+        };
+        
+        img.onerror = () => {
+            // Пробуем альтернативный URL
+            const altUrl = `https://drive.google.com/uc?export=view&id=${encodeURIComponent(fileId)}`;
+            img.crossOrigin = "anonymous";
+            img.src = altUrl;
+            
+            img.onerror = () => {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            };
+        };
+        
+        img.crossOrigin = "anonymous";
+        img.src = imageUrl;
+    } else {
+        document.querySelector('.loading').textContent = 'Не указан ID изображения';
+    }
+    </script>
+</body>
+</html>

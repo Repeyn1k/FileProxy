@@ -33,9 +33,6 @@ class DriveImageProxy {
         // Кнопка копирования ссылки
         document.getElementById('copyBtn').addEventListener('click', () => this.copyProxyLink());
         
-        // Кнопка копирования HTML
-        document.getElementById('copyHtmlBtn').addEventListener('click', () => this.copyHtmlCode());
-        
         // Обработка Enter в поле ввода
         document.getElementById('driveUrl').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -108,10 +105,6 @@ class DriveImageProxy {
         document.getElementById('generatedLink').textContent = this.currentProxyUrl;
         document.getElementById('directLink').textContent = this.currentDirectUrl;
         document.getElementById('fileId').textContent = fileId;
-        
-        // Обновление HTML примера
-        document.getElementById('htmlExample').textContent = 
-            `<img src="${this.currentProxyUrl}" alt="Описание изображения">`;
     }
 
     // Показ секций результатов и предпросмотра

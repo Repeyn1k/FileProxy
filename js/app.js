@@ -31,7 +31,6 @@ window.App = {
     init() {
         console.log(`${this.config.appName} v${this.config.version} инициализирован`);
         
-        this.initTheme();
         this.setupGlobalListeners();
         this.loadFromLocalStorage();
         
@@ -40,64 +39,6 @@ window.App = {
         
         // Показываем приветственное сообщение
         this.showWelcomeMessage();
-    },
-    
-    // Инициализация темы (светлая/темная)
-    initTheme() {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
-        
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        this.state.theme = savedTheme;
-        
-        // Добавляем кнопку переключения темы
-        this.addThemeToggle();
-    },
-    
-    // Добавление кнопки переключения темы
-    addThemeToggle() {
-        const header = document.querySelector('.header');
-        if (!header) return;
-        
-        const themeToggle = document.createElement('button');
-        themeToggle.className = 'theme-toggle';
-        themeToggle.innerHTML = this.state.theme === 'dark' ? '☀️' : '🌙';
-        themeToggle.title = 'Переключить тему';
-        themeToggle.style.cssText = `
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        `;
-        
-        themeToggle.addEventListener('click', () => this.toggleTheme());
-        header.style.position = 'relative';
-        header.appendChild(themeToggle);
-    },
-    
-    // Переключение темы
-    toggleTheme() {
-        const newTheme = this.state.theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        this.state.theme = newTheme;
-        localStorage.setItem('theme', newTheme);
-        
-        const themeToggle = document.querySelector('.theme-toggle');
-        if (themeToggle) {
-            themeToggle.innerHTML = newTheme === 'dark' ? '☀️' : '🌙';
-            themeToggle.style.transform = 'rotate(360deg)';
-            setTimeout(() => {
-                themeToggle.style.transform = 'rotate(0deg)';
-            }, 300);
-        }
-        
-        Utils.showNotification(`Тема изменена на ${newTheme === 'dark' ? 'темную' : 'светлую'}`, 'info');
     },
     
     // Настройка глобальных обработчиков событий
